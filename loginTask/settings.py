@@ -10,7 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +25,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-_vn%bn*zjpn)j50h@xt6_kh=thv4%p9zh@!4ux2=+ughak7oq7'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+# Omitido
+LOGIN_URL = '/accounts/login'
+LOGIN_REDIRECT_URL = '/tasks'
+LOGOUT_REDIRECT_URL = '/accounts/login'
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Application definition
 
@@ -37,12 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tasks.apps.TasksConfig',
-    'accounts.apps.AccountsConfig',
+    'accounts.apps.AccountsConfig',  
 ]
-
-LOGIN_URL = '/accounts/login'
-LOGIN_REDIRECT_URL = '/blog'
-LOGOUT_REDIRECT_URL = '/accounts/login'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,9 +59,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tasks.middleware.auth.AuthMiddleware',  # Añadido
 ]
 
 ROOT_URLCONF = 'loginTask.urls'
+
 
 TEMPLATES = [
     {
@@ -81,11 +90,11 @@ WSGI_APPLICATION = 'loginTask.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.cscpyrwryywidlhfhrfz',
-        'PASSWORD': 'ueH0PeetmXxPIU0C',
-        'HOST': 'aws-0-us-east-1.pooler.supabase.com',
-        'PORT': '6543',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -135,11 +144,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATIC_URL = 'static/'
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'accounts.CustomUser'
